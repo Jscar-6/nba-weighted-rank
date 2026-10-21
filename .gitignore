@@ -1,0 +1,15 @@
+# Full Kaggle dataset is too large for git
+data/*
+#but using the sample csv which has aroudn 1000 entries unless changed
+!data/sample.csv
+*.zip
+
+# C++ build output 
+build/
+cmake-build-*/
+*.o
+
+.vscode/
+
+
+
