@@ -3,7 +3,7 @@
 
 struct Performance {
     // displaying stats
-    std::playerName; 
+    std::string playerName; 
     std::string gameDate;
     std::string team;
     std::string opponent;
@@ -17,6 +17,7 @@ struct Performance {
     int steals = 0;
     int blocks = 0;
     int turnovers = 0;
+    int fouls = 0;
 
     // calculated weighted score
     double score = 0.0;
