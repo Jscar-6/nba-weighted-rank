@@ -20,6 +20,6 @@ struct Performance {
     int fouls = 0;
     
     // calculated weighted score
-    double eFGB = 0.0;
+    double eFGP = 0.0;
     double score = 0.0;
 };

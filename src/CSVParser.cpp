@@ -72,7 +72,7 @@ std::vector<Performance> loadPerformances(const std::string& path){
         perf.steals = static_cast<int>(std::stod(fields[COL_STEALS]));
         perf.blocks = static_cast<int>(std::stod(fields[COL_BLOCKS]));
         perf.turnovers = static_cast<int>(std::stod(fields[COL_TURNOVERS]));
-        perf.eFGB = (static_cast<double>(static_cast<int>(std::stod(fields[COL_FGM]))) + (0.5 * (static_cast<int>(std::stod(fields[COL_TPM])))))) / (static_cast<double>(static_cast<int>(std::stod(fields[COL_FGA])))); 
+        perf.eFGP = (static_cast<double>(static_cast<int>(std::stod(fields[COL_FGM]))) + (0.5 * (static_cast<int>(std::stod(fields[COL_TPM])))))) / (static_cast<double>(static_cast<int>(std::stod(fields[COL_FGA])))); 
         performances.push_back(perf);
     }
 
