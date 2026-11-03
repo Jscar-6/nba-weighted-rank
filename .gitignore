@@ -4,6 +4,8 @@ data/*
 !data/sample.csv
 *.zip
 
+scripts/make_sample.sh
+
 # C++ build output 
 build/
 cmake-build-*/

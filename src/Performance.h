@@ -18,7 +18,8 @@ struct Performance {
     int blocks = 0;
     int turnovers = 0;
     int fouls = 0;
-
+    
     // calculated weighted score
+    double eFGB = 0.0;
     double score = 0.0;
 };
