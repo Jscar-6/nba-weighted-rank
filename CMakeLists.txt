@@ -1,17 +1,13 @@
-cmake_minimum_required(VERSION 4.3)
+cmake_minimum_required(VERSION 3.20)
 project(nba_weighted_rank)
 
 set(CMAKE_CXX_STANDARD 14)
-
-include_directories(src)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(nba_weighted_rank
-        src/CSVParser.cpp
-        src/CSVParser.h
         src/main.cpp
-        src/MaxHeap.cpp
-        src/MaxHeap.h
-        src/Performance.h
+        src/CSVParser.cpp
         src/QuickSelect.cpp
-        src/QuickSelect.h
 )
+
+target_include_directories(nba_weighted_rank PRIVATE src)
