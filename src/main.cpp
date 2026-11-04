@@ -2,6 +2,8 @@
 #include <vector>
 #include "QuickSelect.h"
 #include <chrono>
+#include "CSVParser.h"
+#include <algorithm>
 
 int main() {
     std::vector<Performance> data;
@@ -75,6 +77,53 @@ int main() {
     std::cout << "Tied scores: " << (tiesPassed ? "PASS" : "FAIL") << '\n';
 
     passed = passed && emptyPassed && smallPassed && tiesPassed;
+
+
+    auto games = loadPerformances("data/sample.csv");
+    if (games.empty()) {
+        games = loadPerformances("../data/sample.csv");
+    }
+    if (games.empty()) {
+        std::cerr << "No games loaded. Check the sample.csv location.\n";
+        return 1;
+    }
+
+    std::vector<int> expected;
+    for (auto& game : games) {
+        game.score = game.points;
+        expected.push_back(game.points);
+    }
+
+
+    std::sort(expected.rbegin(), expected.rend());
+
+    auto realStart = std::chrono::steady_clock::now();
+    auto topGames = selector.top25(games);
+    auto realEnd = std::chrono::steady_clock::now();
+
+    double realMs =
+        std::chrono::duration<double, std::milli>(realEnd - realStart).count();
+
+    std::cout << "Quickselect on " << games.size()
+              << " performances: " << realMs << " ms\n";
+
+    bool realDataPassed =
+        topGames.size() == std::min<std::size_t>(25, games.size());
+
+    std::cout << "\nLoaded " << games.size() << " performances\n";
+    for (std::size_t i = 0; i < topGames.size(); ++i) {
+        const auto& game = topGames[i];
+        std::cout << i + 1 << ". " << game.playerName << " | "
+                  << game.gameDate << " | " << game.points << " points\n";
+
+        if (game.points != expected[i]) {
+            realDataPassed = false;
+        }
+    }
+
+    std::cout << "Real-data ranking: "
+              << (realDataPassed ? "PASS" : "FAIL") << '\n';
+    passed = passed && realDataPassed;
 
     return passed ? 0 : 1;
 }
