@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "QuickSelect.h"
+#include <chrono>
 
 int main() {
     std::vector<Performance> data;
@@ -14,8 +15,17 @@ int main() {
     }
 
     QuickSelect selector;
+    auto start = std::chrono::steady_clock::now();
+
     std::vector<Performance> results = selector.top25(data);
 
+    auto end = std::chrono::steady_clock::now();
+
+    double milliseconds =
+        std::chrono::duration<double, std::milli>(end - start).count();
+
+    std::cout << "Quickselect time: "
+              << milliseconds << " ms\n";
     bool passed = results.size() == 25;
 
     for (int i = 0; i < static_cast<int>(results.size()); i++) {
