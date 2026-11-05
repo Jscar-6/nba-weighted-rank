@@ -1,5 +1,7 @@
 #include "MaxHeap.h"
 #include <vector>
+
+#include "Performance.h"
 using namespace std;
 
 void MaxHeap::buildHeap() {
@@ -8,26 +10,29 @@ void MaxHeap::buildHeap() {
     }
 }
 
-int MaxHeap::extractMax() {
-    int max = heap[0];
+Performance MaxHeap::extractMax() {
+    Performance max = heap[0];
     heap[0] = heap[--size];
     heapifyDown(0);
     return max;
 }
 
 void MaxHeap::heapifyDown(int index) {
-    int largest = 0;
-    if (2*index + 1 >= size || heap[index] < heap[2*index + 1] || heap[index] > heap[2*index + 2]) {
-        return;
+    int largest = index;
+    int left = 2*index + 1;
+    int right = 2*index + 2;
+
+    if (left < size && heap[left].score > heap[largest].score) {
+        largest = left;
     }
-    if (2*index + 2 < size && heap[2*index + 1] < heap[2*index + 2]) {
-        largest = heap[2*index + 2];
+    if (right < size && heap[right].score > heap[largest].score) {
+        largest = right;
     }
-    else if (2*index + 2 < size && heap[2*index + 1] > heap[2*index + 2]) {
-        largest = heap[2*index + 1];
+
+    if (largest != index) {
+        Performance temp = heap[index];
+        heap[index] = heap[largest];
+        heap[largest] = temp;
+        heapifyDown(largest);
     }
-    int temp = heap[index];
-    heap[index] = largest;
-    largest = temp;
-    heapifyDown(largest);
 }

@@ -1,20 +1,21 @@
 #ifndef NBA_WEIGHTED_RANK_MAXHEAP_H
 #define NBA_WEIGHTED_RANK_MAXHEAP_H
 #include <vector>
+#include "Performance.h"
 using namespace std;
 
 class MaxHeap {
-    vector<int> heap;
+    vector<Performance> heap;
     int size;
     void heapifyDown(int index);
     void buildHeap();
 public:
-    MaxHeap(vector<int>& array) {
+    MaxHeap(vector<Performance>& array) {
         heap = array;
-        size = heap.size();
+        size = static_cast<int>(heap.size());
         buildHeap();
     }
-    int extractMax();
+    Performance extractMax();
 };
 
 
