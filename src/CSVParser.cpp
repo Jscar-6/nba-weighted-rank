@@ -58,14 +58,15 @@ std::vector<Performance> loadPerformances(const std::string& path){
 
     while(std::getline(file, line)){
         std::vector<std::string> fields = splitLine(line);
-        
+        // DO WE WANT TO SKIP PRESEASON / ALL-STAR games??
         if (fields.size() <= COL_TURNOVERS) {
-            continue;  //
+            continue;
         }
 
         if (fields[COL_POINTS].find_first_not_of(" \t\r\n") == std::string::npos) {
             continue;
         }
+
 
         Performance perf;
         perf.playerName = fields[COL_FIRST_NAME] + " " + fields[COL_LAST_NAME];
@@ -79,12 +80,13 @@ std::vector<Performance> loadPerformances(const std::string& path){
         perf.steals = static_cast<int>(std::stod(fields[COL_STEALS]));
         perf.blocks = static_cast<int>(std::stod(fields[COL_BLOCKS]));
         perf.turnovers = static_cast<int>(std::stod(fields[COL_TURNOVERS]));
-        if (static_cast<int>(std::stod(fields[COL_FGA])) > 0){
-            perf.eFGP = (static_cast<double>(static_cast<int>(std::stod(fields[COL_FGM]))) + (0.5 * (static_cast<int>(std::stod(fields[COL_TPM])))))) / (static_cast<double>(static_cast<int>(std::stod(fields[COL_FGA]))));  
+        const double shotsMade = std::stod(fields[COL_FGM]);
+        const double threesMade = std::stod(fields[COL_TPM]);
+        const double shotsAttempted = std::stod(fields[COL_FGA]);
+        if (shotsAttempted > 0) {
+            perf.eFGP = (shotsMade + 0.5 * threesMade) / shotsAttempted;
         }
         performances.push_back(perf);
     }
-
     return performances;
 }
-
