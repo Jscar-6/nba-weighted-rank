@@ -58,7 +58,14 @@ std::vector<Performance> loadPerformances(const std::string& path){
 
     while(std::getline(file, line)){
         std::vector<std::string> fields = splitLine(line);
-        // DO WE WANT TO SKIP PRESEASON / ALL-STAR games??
+        
+        if (fields.size() <= COL_TURNOVERS) {
+            continue;  //
+        }
+
+        if (fields[COL_POINTS].find_first_not_of(" \t\r\n") == std::string::npos) {
+            continue;
+        }
 
         Performance perf;
         perf.playerName = fields[COL_FIRST_NAME] + " " + fields[COL_LAST_NAME];
