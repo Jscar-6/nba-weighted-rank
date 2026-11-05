@@ -11,4 +11,6 @@ add_executable(nba_weighted_rank
         src/main.cpp
         src/MaxHeap.cpp
         src/MaxHeap.h
+        src/QuickSelect.cpp
+        src/QuickSelect.h
         src/Performance.h)
