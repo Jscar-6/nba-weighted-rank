@@ -16,9 +16,9 @@ const int COL_STEALS = 19;
 const int COL_FOULS = 32;
 const int COL_TURNOVERS = 33;
 const int COL_REBOUNDS = 31;
-const int COL_FGA = 21;
-const int COL_FGM = 22;
-const int COL_TPM = 24;
+const int COL_FGA = 20;
+const int COL_FGM = 21;
+const int COL_TPM = 24; // three pointers made
 
 //splits one csv line into its fields (string form, so all stored in one string vector>
 std::vector<std::string> splitLine(const std::string& entryLine){
@@ -72,7 +72,9 @@ std::vector<Performance> loadPerformances(const std::string& path){
         perf.steals = static_cast<int>(std::stod(fields[COL_STEALS]));
         perf.blocks = static_cast<int>(std::stod(fields[COL_BLOCKS]));
         perf.turnovers = static_cast<int>(std::stod(fields[COL_TURNOVERS]));
-        perf.eFGP = (static_cast<double>(static_cast<int>(std::stod(fields[COL_FGM]))) + (0.5 * (static_cast<int>(std::stod(fields[COL_TPM])))))) / (static_cast<double>(static_cast<int>(std::stod(fields[COL_FGA])))); 
+        if (static_cast<int>(std::stod(fields[COL_FGA])) > 0){
+            perf.eFGP = (static_cast<double>(static_cast<int>(std::stod(fields[COL_FGM]))) + (0.5 * (static_cast<int>(std::stod(fields[COL_TPM])))))) / (static_cast<double>(static_cast<int>(std::stod(fields[COL_FGA]))));  
+        }
         performances.push_back(perf);
     }
 
