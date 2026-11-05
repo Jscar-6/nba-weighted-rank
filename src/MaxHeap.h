@@ -16,6 +16,7 @@ public:
         buildHeap();
     }
     Performance extractMax();
+    vector<Performance> top25();
 };
 
 

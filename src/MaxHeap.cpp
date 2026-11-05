@@ -36,3 +36,11 @@ void MaxHeap::heapifyDown(int index) {
         heapifyDown(largest);
     }
 }
+
+vector<Performance> MaxHeap::top25() {
+    vector<Performance> result;
+    for (int i = 0; i < 25; i++) {
+        result.push_back(extractMax());
+    }
+    return result;
+}
