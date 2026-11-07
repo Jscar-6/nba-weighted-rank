@@ -39,7 +39,7 @@ void MaxHeap::heapifyDown(int index) {
 
 vector<Performance> MaxHeap::top25() {
     vector<Performance> result;
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < 25 && size > 0; i++) {
         result.push_back(extractMax());
     }
     return result;
