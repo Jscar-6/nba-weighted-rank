@@ -16,6 +16,9 @@ const int COL_STEALS = 19;
 const int COL_FOULS = 32;
 const int COL_TURNOVERS = 33;
 const int COL_REBOUNDS = 31;
+const int COL_FGA = 20;
+const int COL_FGM = 21;
+const int COL_TPM = 24; // three pointers made
 
 //splits one csv line into its fields (string form, so all stored in one string vector>
 std::vector<std::string> splitLine(const std::string& entryLine){
@@ -56,6 +59,14 @@ std::vector<Performance> loadPerformances(const std::string& path){
     while(std::getline(file, line)){
         std::vector<std::string> fields = splitLine(line);
         // DO WE WANT TO SKIP PRESEASON / ALL-STAR games??
+        if (fields.size() <= COL_TURNOVERS) {
+            continue;
+        }
+
+        if (fields[COL_POINTS].find_first_not_of(" \t\r\n") == std::string::npos) {
+            continue;
+        }
+
 
         Performance perf;
         perf.playerName = fields[COL_FIRST_NAME] + " " + fields[COL_LAST_NAME];
@@ -69,9 +80,13 @@ std::vector<Performance> loadPerformances(const std::string& path){
         perf.steals = static_cast<int>(std::stod(fields[COL_STEALS]));
         perf.blocks = static_cast<int>(std::stod(fields[COL_BLOCKS]));
         perf.turnovers = static_cast<int>(std::stod(fields[COL_TURNOVERS]));
+        const double shotsMade = std::stod(fields[COL_FGM]);
+        const double threesMade = std::stod(fields[COL_TPM]);
+        const double shotsAttempted = std::stod(fields[COL_FGA]);
+        if (shotsAttempted > 0) {
+            perf.eFGP = (shotsMade + 0.5 * threesMade) / shotsAttempted;
+        }
         performances.push_back(perf);
     }
-
     return performances;
 }
-
