@@ -8,6 +8,7 @@ add_executable(nba_weighted_rank
         src/main.cpp
         src/CSVParser.cpp
         src/QuickSelect.cpp
+        src/MaxHeap.cpp
 )
 
 target_include_directories(nba_weighted_rank PRIVATE src)

@@ -80,10 +80,12 @@ std::vector<Performance> loadPerformances(const std::string& path){
         perf.steals = static_cast<int>(std::stod(fields[COL_STEALS]));
         perf.blocks = static_cast<int>(std::stod(fields[COL_BLOCKS]));
         perf.turnovers = static_cast<int>(std::stod(fields[COL_TURNOVERS]));
+        perf.fouls = static_cast<int>(std::stod(fields[COL_FOULS]));
         const double shotsMade = std::stod(fields[COL_FGM]);
         const double threesMade = std::stod(fields[COL_TPM]);
         const double shotsAttempted = std::stod(fields[COL_FGA]);
-        if (shotsAttempted > 0) {
+        // A few 1950s-60s rows have more makes than attempts, so eFGP stays 0 for those
+        if (shotsAttempted > 0 && shotsMade <= shotsAttempted) {
             perf.eFGP = (shotsMade + 0.5 * threesMade) / shotsAttempted;
         }
         performances.push_back(perf);
