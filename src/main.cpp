@@ -8,6 +8,8 @@
 #include "CSVParser.h"
 #include "MaxHeap.h"
 #include "QuickSelect.h"
+#include <algorithm>
+#include <cctype>
 
 struct Weights {
     double points;
@@ -119,7 +121,7 @@ void computeScores(std::vector<Performance>& performances, const Weights& w) {
     // TODO 1: set p.score for every performance.
     for (Performance& performance : performances) {
         performance.score = performance.points * w.points + performance.assists * w.assists +
-            performance.rebounds * w.rebounds + w.steals * w.steals + performance.blocks * w.blocks -
+            performance.rebounds * w.rebounds + performance.steals * w.steals + performance.blocks * w.blocks -
                 performance.turnovers * w.turnovers - performance.fouls * w.fouls + performance.eFGP *
                     EFGP_SCALE * w.eFGP;
     }
@@ -210,12 +212,142 @@ void printComparison(const RunResult& heapResult, const RunResult& quickSelectRe
     }
 }
 
-void runRanking(std::vector<Performance>& performances, const Weights& weights) {
-    printWeights(weights);
-    computeScores(performances, weights);
+std::string lowercase(std::string text) {
+    std::transform(text.begin(), text.end(), text.begin(),
+                   [](unsigned char c) {
+                       return static_cast<char>(std::tolower(c));
+                   });
+    return text;
+}
 
-    RunResult heapResult = runMaxHeap(performances);
-    RunResult quickSelectResult = runQuickSelect(performances);
+std::vector<Performance> filterByTeam(
+    const std::vector<Performance>& performances) {
+
+    std::cout << "\nTeam name (example: Lakers), or * for all teams: ";
+    std::string team;
+    std::getline(std::cin >> std::ws, team);
+
+    if (team == "*") {
+        return performances;
+    }
+
+    team = lowercase(team);
+    std::vector<Performance> filtered;
+
+    for (const auto& performance : performances) {
+        if (lowercase(performance.team).find(team) != std::string::npos) {
+            filtered.push_back(performance);
+        }
+    }
+
+    return filtered;
+}
+
+std::vector<Performance> filterByGameType(
+    const std::vector<Performance>& performances) {
+
+    std::cout << "\nGame type:\n"
+              << "1. All loaded game types\n"
+              << "2. Regular season only\n"
+              << "3. Playoffs only\n";
+
+    int choice = readMenuChoice(3);
+
+    if (choice == 1) {
+        return performances;
+    }
+
+    const std::string wanted =
+        choice == 2 ? "Regular Season" : "Playoffs";
+
+    std::vector<Performance> filtered;
+
+    for (const auto& performance : performances) {
+        if (performance.gameType == wanted) {
+            filtered.push_back(performance);
+        }
+    }
+
+    return filtered;
+}
+
+int readYear(const std::string& prompt, int minimum) {
+    while (true) {
+        std::cout << prompt;
+        std::string input;
+
+        if (!(std::cin >> input)) {
+            std::exit(0);
+        }
+
+        if (input.size() == 4 &&
+            input.find_first_not_of("0123456789") == std::string::npos) {
+            int year = std::stoi(input);
+            if (year >= minimum) {
+                return year;
+            }
+            }
+
+        std::cout << "Enter a four-digit year from "
+                  << minimum << " to 9999.\n";
+    }
+}
+
+std::vector<Performance> filterByYear(
+    const std::vector<Performance>& performances) {
+
+    std::cout << "\nYear filter:\n"
+              << "1. All years\n"
+              << "2. Choose a calendar-year range\n";
+
+    if (readMenuChoice(2) == 1) {
+        return performances;
+    }
+
+    int firstYear = readYear("Starting year: ", 1000);
+    int lastYear = readYear("Ending year: ", firstYear);
+
+    std::vector<Performance> filtered;
+
+    for (const auto& performance : performances) {
+        if (performance.gameDate.size() < 4) {
+            continue;
+        }
+
+        std::string yearText = performance.gameDate.substr(0, 4);
+        if (yearText.find_first_not_of("0123456789")
+            != std::string::npos) {
+            continue;
+            }
+
+        int year = std::stoi(yearText);
+        if (year >= firstYear && year <= lastYear) {
+            filtered.push_back(performance);
+        }
+    }
+
+    return filtered;
+}
+
+void runRanking(std::vector<Performance>& performances,
+                const Weights& weights) {
+    std::vector<Performance> filtered = filterByTeam(performances);
+    filtered = filterByGameType(filtered);
+    filtered = filterByYear(filtered);
+
+    if (filtered.empty()) {
+        std::cout << "\nNo performances match those filters. Returning to menu.\n";
+        return;
+    }
+
+    std::cout << "\nRanking " << filtered.size()
+              << " matching performances.\n";
+
+    printWeights(weights);
+    computeScores(filtered, weights);
+
+    RunResult heapResult = runMaxHeap(filtered);
+    RunResult quickSelectResult = runQuickSelect(filtered);
 
     printResults(heapResult.top);
     printComparison(heapResult, quickSelectResult);
