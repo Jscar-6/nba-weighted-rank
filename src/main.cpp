@@ -34,6 +34,8 @@ struct RunResult {
 // Order: points, assists, rebounds, steals, blocks, turnovers, fouls, eFG%
 const std::vector<Preset> PRESETS = {
     {"Pure Scorer", {3.0, 0.5, 0.5, 0.5, 0.5, 1.0, 0.0, 1.0}},
+    {"Defensive Legend", {1.0, 1.0, 1.0, 5.0, 5.0, 1.0, 2.0, 2.0}},
+    {"All-Around Player", {0.8, 1.5, 1.5, 1.0, 1.0, 1.5, 2.0, 2.0}}
 };
 
 // eFGP is usually between 0 and 1.5, so it is scaled to matter next to counting stats
@@ -115,6 +117,12 @@ void printWeights(const Weights& w) {
 
 void computeScores(std::vector<Performance>& performances, const Weights& w) {
     // TODO 1: set p.score for every performance.
+    for (Performance& performance : performances) {
+        performance.score = performance.points * w.points + performance.assists * w.assists +
+            performance.rebounds * w.rebounds + w.steals * w.steals + performance.blocks * w.blocks -
+                performance.turnovers * w.turnovers - performance.fouls * w.fouls + performance.eFGP *
+                    EFGP_SCALE * w.eFGP;
+    }
     // Multiply each stat by its weight and add them up, but SUBTRACT turnovers and fouls.
     // Use p.eFGP * EFGP_SCALE * w.eFGP for the eFG% part.
 }
@@ -139,7 +147,15 @@ RunResult runQuickSelect(const std::vector<Performance>& performances) {
 // Compares scores only, because tied performances can come back in a different order
 bool scoresMatch(const std::vector<Performance>& a, const std::vector<Performance>& b) {
     // TODO 2: return false if the sizes differ or if any score differ
-    return false;
+    if (a.size() != b.size()) {
+        return false;
+    }
+    for (int i = 0; i < static_cast<int>(a.size()); i++) {
+        if (a[i].score != b[i].score) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void printResults(const std::vector<Performance>& top) {
@@ -173,6 +189,16 @@ void printComparison(const RunResult& heapResult, const RunResult& quickSelectRe
 
     // TODO print which one was faster and by how many ms, like:
     //   Faster: Quickselect by 245.10 ms
+
+    if (quickSelectResult.ms < heapResult.ms) {
+        std::cout << "  Faster: Quickselect by " << heapResult.ms - quickSelectResult.ms << " ms\n";
+    }
+    else if (quickSelectResult.ms > heapResult.ms) {
+        std::cout << "  Faster: Max Heap by " << quickSelectResult.ms - heapResult.ms << " ms\n";
+    }
+    else {
+        std::cout << "  Faster: Both took the same amount of time\n";
+    }
 
     std::cout.unsetf(std::ios::fixed);
     std::cout << std::setprecision(6);
