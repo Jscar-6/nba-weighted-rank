@@ -235,7 +235,7 @@ std::vector<Performance> filterByTeam(
     std::vector<Performance> filtered;
 
     for (const auto& performance : performances) {
-        if (lowercase(performance.team).find(team) != std::string::npos) {
+        if ((" " + lowercase(performance.team)).find(" " + team) != std::string::npos) {
             filtered.push_back(performance);
         }
     }
