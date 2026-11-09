@@ -1,3 +1,7 @@
+# NBA Weighted Rank
+
+In this project, users can uncover the top 25 NBA single-game player performances using a max heap and a quick select algorithm that fit a set of weights on a player's points, assists, rebounds, steals, blocks, turnovers, fouls, and effective field goal percentage that they choose themselves or select presets. They can adjust the team, years, and game types.
+
 **Requirements**
 
 - A C++14 compiler (g++ or clang++), or CMake 3.20 or newer
